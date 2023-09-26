@@ -6,7 +6,8 @@ JSON_PATH= os.getcwd()+'/data/file_info.json'
 
 SQLI= [
     r'"{1,3}.*?\'+.*?\'+.*?\'{1,3}"',
-       r'(?<!\{)\{[^}]+\}'
+    r'(?<!\{)\{[^}]+\}',
+    r"\.format\("
 ]
 
 """
@@ -29,7 +30,7 @@ def sqli(file_path):
         with open(JSON_PATH, 'r') as file:
             data = json.load(file)
     except FileNotFoundError:
-        print("File 'file_info.json' not found.")
+        pass
     except json.JSONDecodeError as e:
         pass
     except UnicodeDecodeError as e:
@@ -39,11 +40,11 @@ def sqli(file_path):
             string = data[file_path][str(line)]
             for sql in SQLI:
                 try:
-                    if re.match(string, sql) and len(string)>5 :
-                        print(f"""Vulnerable to SQL Injection in file: {file_path} \n line : {line} \n
-                                """)
+                    if re.search(sql,string):
+                        print(f"""Vulnerable to SQL Injection in line : {line}""")
+                        print(f"""Content of line {line} : {string}""")
                 except re.error as e:
                     pass
-                
+            
             
     
