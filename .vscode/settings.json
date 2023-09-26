@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 {
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"
     },
     "python.formatting.provider": "none"
+=======
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "python.formatting.provider": "none"
+>>>>>>> c0775688a85bdb8f5a53e88b36d9c213058b5788
 }
