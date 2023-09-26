@@ -29,8 +29,16 @@ args = parser.parse_args()
 
 
 if args.file:
-    print("""[+] Have found files in folder""")
+    print(f"""[+] Have found files in folder: {args.file}""")
     for path in get_all_files(args.file):
         print("[-] "+path)
-    print("""[+] Start searching for sink in project""")
+
+    file_paths=get_all_files(args.file)
+    file_info_to_json(file_paths)
+
+
     
+
+    
+
+        

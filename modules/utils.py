@@ -1,4 +1,4 @@
-import os
+import os,chardet,json
 
 
 
@@ -14,25 +14,40 @@ def get_all_files(folder_path):
     
     return file_paths
 
-def read_file_content(file_paths):
+"""
+return the encoding type of the specific file
+Param:
++ file_path : str (path of a file)
+"""
+def detected_encoding(file_path):
+    with open(file_path, 'rb') as file:
+        raw_data = file.read()
+        detected_encoding = chardet.detect(raw_data)['encoding']
+    return detected_encoding
+
+
+""" 
+    Try to read the contents of files in array, also try 3 kind of encoding in case that files have differences in encoding types
+"""
+def read_file_content(file_path):
     file_contents = []
     
-    """ Try to read the contents of files in array, also try 3 kind of encoding in case that files have differences in encoding types
-    """
-    for file_path in file_paths:
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                content = file.read()
-                file_contents.append(content)
-        except UnicodeDecodeError:
-            try:
-                with open(file_path, 'r', encoding='utf-16') as file:
-                    content = file.read()
-                    file_contents.append(content)
-            except UnicodeDecodeError:
-                with open(file_path, 'r', encoding='latin-1') as file:
-                    content = file.read()
-                    file_contents.append(content)
-    
-    return file_contents
+    with open(file_path, 'r', encoding=detected_encoding(file_path)) as file:
+        lines= file.readlines()
+        file_dict={}
 
+        for line_number,line_content in enumerate(lines,start=1):
+            file_dict[line_number]=line_content.strip()
+
+    return file_dict
+
+def file_info_to_json(file_paths):
+    file_info={}
+    for path in file_paths:
+        temp={
+            path:read_file_content(path)
+        }
+        file_info.update(temp)
+    with open('data/file_info.json','w') as file:
+        json.dump(file_info,file,indent=4)
+    print("Project information have been exported to data/file_info.json")
