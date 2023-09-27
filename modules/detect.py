@@ -26,18 +26,19 @@ SQLI= [
     r'(?<!\{)\{[^}]+\}',
     r"\.format\("
 ]
-
-try:
-    with open(JSON_PATH, 'r') as file:
-        data = json.load(file)
-except FileNotFoundError:
-    pass
-except json.JSONDecodeError as e:
-    pass
-except UnicodeDecodeError as e:
-    pass
-else:
-    pass
+def json_data():
+    try:
+        with open(JSON_PATH, 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        pass
+    except json.JSONDecodeError as e:
+        pass
+    except UnicodeDecodeError as e:
+        pass
+    else:
+        pass
+    return data
 
 
 """
@@ -57,8 +58,8 @@ def get_nested_dict_length(dictionary):
 def sqli(file_path):
     vulnerable=[]
     isVulnerable = False
-    for line in range (1, get_nested_dict_length(data[file_path])):
-        string = data[file_path][str(line)]
+    for line in range (1, get_nested_dict_length(json_data()[file_path])):
+        string = json_data()[file_path][str(line)]
         for sql in SQLI:
             try:
                 if re.search(sql,string) and file_path[-2:] == "py":
@@ -72,7 +73,7 @@ def sqli(file_path):
         for v in vulnerable: 
             print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to SQL injection attack" + reset_text)
             print(cyan + f"  [*] Line {v[1]}")
-            print(f"   [*] Vulnerable code snippet:  {v[2]}\n" + reset_text)
+            print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
     else:
         print(green + f'✅ Your {file_path} is not Vulnerable to SQL Injection! 👌😁👌' + reset_text)
             

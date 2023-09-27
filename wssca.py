@@ -1,7 +1,7 @@
 from modules.utils import *
 from modules.detect import *
 from tqdm import trange
-import argparse,sys,time
+import argparse,sys,time,atexit
 
 
 
@@ -38,16 +38,19 @@ if args.file:
         
     if(os.path.exists(JSON_PATH) == False):
         file_info_to_json(file_paths)
-    print("\n[+] Searching for vulnerabilities....")
+    
     # Wait for the user to press Enter
     input("\nYour project has been extracted to "+cyan+"data/file_info.json."+reset_text+"\nPress Enter to continue...")
     
     #loading bar
     for i in trange(100, ncols=80):
-        time.sleep(0.01)
-
+        time.sleep(0.001)
+    print("\n[+] Searching for vulnerabilities....")
     for path in get_all_files(args.file):
         sqli(path)
-    
 
-        
+
+def delete_json_file():
+    os.remove(JSON_PATH)
+
+atexit.register(delete_json_file)
