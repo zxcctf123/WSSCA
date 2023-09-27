@@ -1,6 +1,6 @@
 from modules.utils import *
 from modules.detect import *
-import argparse,sys
+import argparse,sys,time
 
 
 
@@ -34,11 +34,13 @@ if args.file:
     file_paths=get_all_files(args.file)
     for path in get_all_files(args.file):
         print("[-] "+path)
-        # sqli(path)
+        
     if(os.path.exists(JSON_PATH) == False):
         file_info_to_json(file_paths)
-
-#    sqli('/mnt/d/DTU/Capstone1/lab/database.py')
+    print("[+] Searching for vulnerabilities....")
+    time.sleep(2)
+    for path in get_all_files(args.file):
+        sqli(path)
     
 
         
