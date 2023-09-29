@@ -8,7 +8,7 @@ import argparse,sys,time,atexit
 print(magenta +"""
 _ _ _ _____ _____ _____ _____ 
 | | | |   __|   __|     |  _  |"""+blend_color+"""
-| | | |__   |__   |   --|     |"""+red+"""
+| | | |__   |__   |   --|     |"""+blue+"""
 |_____|_____|_____|_____|__|__|
 """+green+"""
 By Khanhhnahk1 and H Roy Todd
@@ -16,7 +16,7 @@ By Khanhhnahk1 and H Roy Todd
 
 
 # Create an ArgumentParser object
-parser = argparse.ArgumentParser(description='\U0001F4D6 Example argument parsing')
+parser = argparse.ArgumentParser(description='\U0001F4D6'+cyan+' Example argument parsing'+reset_text)
 
 
 parser.add_argument('-f', '--file', help='\U0001F4C2 Specify project folter, '+yellow+'example: /mnt/d/project/vulnerableflask'+reset_text)
@@ -44,10 +44,14 @@ if args.file:
     
     #loading bar
     for i in trange(100, ncols=80):
-        time.sleep(0.001)
+        time.sleep(0.01)
     print("\n[+] Searching for vulnerabilities....")
-    for path in get_all_files(args.file):
-        sqli(path)
+    if isSqli(file_paths):
+        for path in file_paths:
+            sqli(path)
+    else:
+        print(green + '\n✅ Your project is not Vulnerable to SQL Injection! 👌😁👌' + reset_text)
+    
 
 
 def delete_json_file():
