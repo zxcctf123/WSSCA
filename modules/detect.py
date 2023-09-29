@@ -75,7 +75,7 @@ def sqli(file_path):
             print(cyan + f"  [*] Line {v[1]}")
             print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
     else:
-        print(green + f'✅ Your {file_path} is not Vulnerable to SQL Injection! 👌😁👌' + reset_text)
+        print(green + f'✅ Your {file_path} is not vulnerable to SQL Injection! 👌😁👌' + reset_text)
             
             
             
