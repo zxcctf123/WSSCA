@@ -53,7 +53,6 @@ if args.file:
         print(green + '\n✅ Your project is not Vulnerable to SQL Injection! 👌😁👌' + reset_text)
     
 
-
 def delete_json_file():
     os.remove(JSON_PATH)
 

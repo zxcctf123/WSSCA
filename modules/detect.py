@@ -88,12 +88,6 @@ def sqli(file_path):
             print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to SQL injection attack" + reset_text)
             print(cyan + f"  [*] Line {v[1]}")
             print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
-<<<<<<< HEAD
-    else:
-        print(green + f'✅ Your {file_path} is not vulnerable to SQL Injection! 👌😁👌' + reset_text)
-=======
-    
->>>>>>> cc4ec601ce2bf6691bf4defa083d9d01f7cf94ec
             
             
             
