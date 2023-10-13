@@ -56,4 +56,4 @@ if args.file:
 def delete_json_file():
     os.remove(JSON_PATH)
 
-atexit.register(delete_json_file)
+# atexit.register(delete_json_file)
