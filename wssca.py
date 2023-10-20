@@ -67,6 +67,6 @@ if args.file:
 
 def delete_json_file():
     os.remove(JSON_PATH)
-    print('Deleted ' + cyan + 'data/file_info.json' + reset_text)
+    print('Deleted ' + cyan + 'application temporary data. CYA!' + reset_text)
 
 atexit.register(delete_json_file)

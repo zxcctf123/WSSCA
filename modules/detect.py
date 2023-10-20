@@ -27,10 +27,8 @@ SQLI = [
 ]
 
 XSS = [
-    r'<script\b[^>]*>.*?</script>',
-    r'<[^>]+on[^=]+=[\'"].*?[\'"]\s*[^>]*>',
-    r'javascript:',
-    r'eval\('
+    r"{!(.*?)!}",
+    r"{{(.*?)\s*\|\s*safe\s*}}"
 ]
 
 CSRF = [
