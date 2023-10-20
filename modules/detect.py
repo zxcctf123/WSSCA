@@ -33,6 +33,10 @@ XSS = [
     r'eval\('
 ]
 
+CSRF = [
+    r'\bcsrfmiddlewaretoken\b'
+]
+
 def json_data():
     try:
         with open(JSON_PATH, 'r') as file:
@@ -86,6 +90,12 @@ def isVulnerable(file_path):
 
 def vuln(file_path, whichVuln):
     vulnerable=[]
+    match whichVuln:
+        case 1 : attack = "SQL Injection"
+        case 2 : attack = "XSS"
+        case 3 : attack = "SSRF"
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to "+ attack +" attack" + reset_text)
+    # print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to "+ attack +" attack" + reset_text)
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         if whichVuln == 1:
@@ -104,11 +114,7 @@ def vuln(file_path, whichVuln):
                         vulnerable.append(temp)
                 except re.error as e:
                     pass
-    match whichVuln:
-        case 1 : attack = "SQL Injection"
-        case 2 : attack = "XSS"
-        case 3 : attack = "SSRF"
-    print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to "+ attack +" attack" + reset_text)
-    for v in vulnerable: 
-        print(cyan + f"  [*] Line {v[1]}")
-        print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
+    return vulnerable
+    # for v in vulnerable: 
+    #     print(cyan + f"  [*] Line {v[1]}")
+    #     print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)

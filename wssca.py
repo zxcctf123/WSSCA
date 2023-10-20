@@ -43,20 +43,27 @@ if args.file:
     input("\nYour project has been extracted to "+cyan+"data/file_info.json."+reset_text+"\nPress Enter to continue...")
     
     #loading bar
-    print("\n[+] Searching for vulnerabilities....")
-    for i in trange(100, ncols=80):
-        time.sleep(0.01)
+    # print("\n[+] Searching for vulnerabilities...")
+    # for i in trange(100, ncols=80):
+    #     time.sleep(0.01)
 
     #Detect and print out vulnerabilities
     isVuln = False
-    for file_path in file_paths:
+    vulnerable_files = []
+    for i in trange(len(file_paths), desc="Detecting"):
+        file_path = file_paths[i]
         whichvulv = isVulnerable(file_path)
         if whichvulv != 0:
             isVuln = True
-            vuln(file_path, whichvulv)
+            vulnerable_files.append(vuln(file_path, whichvulv))
     if not isVuln:
-        print(green + '\n✅ Your project is not Vulnerable to SQL Injection! 👌😁👌' + reset_text)
-    
+        print(green + '\n✅ Your project is not vulnerable! 👌😁👌' + reset_text)
+    else:
+        for vulnerable_file in vulnerable_files:
+            print(vulnerable_file[0])
+            for v in vulnerable_file:
+                print(cyan + f"  [*] Line {v[1]}")
+                print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
 
 def delete_json_file():
     os.remove(JSON_PATH)
