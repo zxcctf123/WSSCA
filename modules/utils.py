@@ -53,4 +53,3 @@ def file_info_to_json(file_paths):
         file_info.update(temp)
     with open('data/file_info.json','w') as file:
         json.dump(file_info,file,indent=4)
-    print("Project information have been exported to data/file_info.json")

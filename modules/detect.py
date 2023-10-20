@@ -62,58 +62,53 @@ def get_ndict_len(dictionary):
 
     return count+1
 
-def isSqli(file_paths):
-    for file_path in file_paths:
-        for line in range (1, get_ndict_len(json_data()[file_path])):
-            string = json_data()[file_path][str(line)]
-            for sql in SQLI:
-                try:
-                    if re.search(sql,string) and file_path[-2:] == "py":
-                        return True
-                except re.error as e:
-                    pass
-    return False
-
-"""
-whichVuln is used to optimize the code for scanning
-0 for sqli
-1 for xss
-2 for ssrf
-...
-"""
-
-def sqli(file_path, whichVuln):
-    vulnerable=[]
+# Vulnerabilities detecting function
+# It returns the code of the vulnerability
+# 1 for sqli
+# 2 for xss
+# 3 for ssrf
+def isVulnerable(file_path):
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for sql in SQLI:
             try:
-                ###########################
                 if re.search(sql,string) and file_path[-2:] == "py":
-                    temp=[file_path,line,string]
-                    vulnerable.append(temp)
+                    return 1
             except re.error as e:
                 pass
-    if (len(vulnerable) != 0):
-        match whichVuln:
-            case 0 : attack = "SQL Injection"
-            case 1 : attack = "XSS"
-            case 2 : attack = "SSRF"
-        print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to "+ attack +" attack" + reset_text)
-    for v in vulnerable: 
-        print(cyan + f"  [*] Line {v[1]}")
-        print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
-            
+        for xss in XSS:
+            try:
+                if re.search(xss,string) and file_path[-4:] == "html":
+                    return 2
+            except re.error as e:
+                pass
+    return 0
 
-def isXSS(file_paths):
-    for file_path in file_paths:
-        for line in range (1, get_ndict_len(json_data()[file_path])):
-            string = json_data()[file_path][str(line)]
+def vuln(file_path, whichVuln):
+    vulnerable=[]
+    for line in range (1, get_ndict_len(json_data()[file_path])):
+        string = json_data()[file_path][str(line)]
+        if whichVuln == 1:
+            for sql in SQLI:
+                try:
+                    if re.search(sql,string) and file_path[-2:] == "py":
+                        temp=[file_path,line,string]
+                        vulnerable.append(temp)
+                except re.error as e:
+                    pass
+        if whichVuln == 2:
             for xss in XSS:
                 try:
                     if re.search(xss,string) and file_path[-4:] == "html":
-                        return True
+                        temp=[file_path,line,string]
+                        vulnerable.append(temp)
                 except re.error as e:
                     pass
-    return False
-            
+    match whichVuln:
+        case 1 : attack = "SQL Injection"
+        case 2 : attack = "XSS"
+        case 3 : attack = "SSRF"
+    print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to "+ attack +" attack" + reset_text)
+    for v in vulnerable: 
+        print(cyan + f"  [*] Line {v[1]}")
+        print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
