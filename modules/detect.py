@@ -1,6 +1,5 @@
 import re,json,os
 
-
 JSON_PATH= os.getcwd()+'/data/file_info.json'
 
 #text color formats
@@ -31,9 +30,17 @@ XSS = [
     r"{{(.*?)\s*\|\s*safe\s*}}"
 ]
 
-CSRF = [
-    r'\bcsrfmiddlewaretoken\b'
+SSRF = [
+    r'urlopen\s*\(\s*[\'"](http|https|ftp)://'
 ]
+
+Deserialize = [
+    r'pickle.load\('
+]
+
+# WeakSecret = [
+#     r''
+# ]
 
 def json_data():
     try:
@@ -69,50 +76,140 @@ def get_ndict_len(dictionary):
 # 1 for sqli
 # 2 for xss
 # 3 for ssrf
+# 4 for desirialize
+# 5 for JWT
 def isVulnerable(file_path):
+    vulvs = ''
+    for line in range (1, get_ndict_len(json_data()[file_path])):
+        string = json_data()[file_path][str(line)]
+        # for sql in SQLI:
+        #     try:
+        #         if re.search(sql,string) and file_path[-2:] == "py":
+        #             return 1
+        #     except re.error as e:
+        #         pass
+        # for xss in XSS:
+        #     try:
+        #         if re.search(xss,string) and file_path[-4:] == "html":
+        #             return 2
+        #     except re.error as e:
+        #         pass
+        if (file_path[-2:] == 'py'):
+            for sql in SQLI:
+                if (re.search(sql, string)):
+                    vulvs+='1'
+                    break
+            for ssrf in SSRF:
+                if (re.search(ssrf, string)):
+                    vulvs+='3'
+                    break
+            for dese in Deserialize:
+                if (re.search(dese, string)):
+                    vulvs+='4'
+                    break
+            # for jwt in WeakSecret:
+            #     if (re.search(jwt, string)):
+            #         vulvs.append('5')
+            #         break
+        for xss in XSS:
+            if file_path[-4:] == 'html' and re.search(xss,string):
+                vulvs+='2'
+                break
+    return vulvs
+
+vulnType = {
+    '1': 'SQL Injection',
+    '2': 'XSS',
+    '3': 'SSRF',
+    '4': 'Deserialize',
+    '5': 'Weak secret key'
+}
+
+def sqli (vulnerable, file_path):
+    attack = ''
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to SQl Injection attack" + reset_text)
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for sql in SQLI:
-            try:
-                if re.search(sql,string) and file_path[-2:] == "py":
-                    return 1
-            except re.error as e:
-                pass
-        for xss in XSS:
-            try:
-                if re.search(xss,string) and file_path[-4:] == "html":
-                    return 2
-            except re.error as e:
-                pass
-    return 0
+            if re.search(sql,string) and file_path[-2:] == "py":
+                temp=[file_path,line,string]
+                vulnerable.append(temp)
+    return vulnerable
 
-def vuln(file_path, whichVuln):
-    vulnerable=[]
-    match whichVuln:
-        case 1 : attack = "SQL Injection"
-        case 2 : attack = "XSS"
-        case 3 : attack = "SSRF"
-    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to "+ attack +" attack" + reset_text)
-    # print("🆘🆘" + red + f" The file {vulnerable[0][0]} have been vulnerable to "+ attack +" attack" + reset_text)
+def xss (vulnerable, file_path):
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to XSS attack" + reset_text)
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
-        if whichVuln == 1:
-            for sql in SQLI:
-                try:
-                    if re.search(sql,string) and file_path[-2:] == "py":
-                        temp=[file_path,line,string]
-                        vulnerable.append(temp)
-                except re.error as e:
-                    pass
-        if whichVuln == 2:
-            for xss in XSS:
-                try:
-                    if re.search(xss,string) and file_path[-4:] == "html":
-                        temp=[file_path,line,string]
-                        vulnerable.append(temp)
-                except re.error as e:
-                    pass
+        for xss in XSS:
+            if re.search(xss,string) and file_path[-2:] == "html":
+                temp=[file_path,line,string]
+                vulnerable.append(temp)
     return vulnerable
-    # for v in vulnerable: 
-    #     print(cyan + f"  [*] Line {v[1]}")
-    #     print(f"   [*] Vulnerable code snippet: \n {v[2]}\n" + reset_text)
+
+def ssrf (vulnerable, file_path):
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to SSRF attack" + reset_text)
+    for line in range (1, get_ndict_len(json_data()[file_path])):
+        string = json_data()[file_path][str(line)]
+        for ssrf in SSRF:
+            if re.search(ssrf,string) and file_path[-2:] == "py":
+                temp=[file_path,line,string]
+                vulnerable.append(temp)
+    return vulnerable
+
+def deserialize (vulnerable, file_path):
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to Deserialize attack" + reset_text)
+    for line in range (1, get_ndict_len(json_data()[file_path])):
+        string = json_data()[file_path][str(line)]
+        for dese in Deserialize:
+            if re.search(dese,string) and file_path[-2:] == "py":
+                temp=[file_path,line,string]
+                vulnerable.append(temp)
+    return vulnerable
+
+# def weakSecr (vulnerable, file_path):
+#     vulnerable.append("🆘🆘" + red + f" The file {file_path} is contained Weak Secret Variables" + reset_text)
+#     for line in range (1, get_ndict_len(json_data()[file_path])):
+#         string = json_data()[file_path][str(line)]
+#         for jwt in WeakSecret:
+#             if re.search(jwt,string) and file_path[-2:] == "py":
+#                 temp=[file_path,line,string]
+#                 vulnerable.append(temp)
+#     return vulnerable
+
+# def vuln(file_path, whichVuln):
+def vuln(file_path, vulvs):
+    vulnerable=[]
+    # # attack = vulnType[whichVuln]
+    # match whichVuln:
+    #     case 1 : attack = "SQL Injection"
+    #     case 2 : attack = "XSS"
+    #     case 3 : attack = "CSRF"
+    # vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to "+ attack +" attack" + reset_text)
+    # for line in range (1, get_ndict_len(json_data()[file_path])):
+    #     string = json_data()[file_path][str(line)]
+    #     if whichVuln == 1:
+    #         for sql in SQLI:
+    #             try:
+    #                 if re.search(sql,string) and file_path[-2:] == "py":
+    #                     temp=[file_path,line,string]
+    #                     vulnerable.append(temp)
+    #             except re.error as e:
+    #                 pass
+    #     if whichVuln == 2:
+    #         for xss in XSS:
+    #             try:
+    #                 if re.search(xss,string) and file_path[-4:] == "html":
+    #                     temp=[file_path,line,string]
+    #                     vulnerable.append(temp)
+    #             except re.error as e:
+    #                 pass
+    # return vulnerable
+    
+    for type in vulvs:
+        match type:
+            case '1' : vulnerable.append(sqli(vulnerable, file_path))
+            case '2' : vulnerable.append(xss(vulnerable, file_path))
+            case '3' : vulnerable.append(ssrf(vulnerable, file_path))
+            case '4' : vulnerable.append(deserialize(vulnerable, file_path))
+            # case 5 : vulnerable.append(weakSecr(vulnerable, file_path))
+    return vulnerable

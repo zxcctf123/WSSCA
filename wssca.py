@@ -25,7 +25,7 @@ parser.add_argument('-f', '--file', help='\U0001F4C2 Specify project folter, '+y
 # Automatically display help if no arguments are provided
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
-    sys.exit(1)
+    
 
 args = parser.parse_args()
 
@@ -41,21 +41,21 @@ if args.file:
     
     # Wait for the user to press Enter
     input("\nYour project has been extracted to "+cyan+"data/file_info.json."+reset_text+"\nPress Enter to continue...")
-    
-    #loading bar
-    # print("\n[+] Searching for vulnerabilities...")
-    # for i in trange(100, ncols=80):
-    #     time.sleep(0.01)
 
     #Detect and print out vulnerabilities
     isVuln = False
     vulnerable_files = []
+    
     for i in trange(len(file_paths), desc="Detecting"):
+        vulvs = ''
         file_path = file_paths[i]
-        whichvulv = isVulnerable(file_path)
-        if whichvulv != 0:
-            isVuln = True
-            vulnerable_files.append(vuln(file_path, whichvulv))
+        # whichvulv = isVulnerable(file_path)
+        vulvs = isVulnerable(file_path)
+        # if whichvulv != 0:
+    if vulvs != '':
+        isVuln = True
+        vulnerable_files.append(vuln(file_path, vulvs))
+        # vulnerable_files.append(vuln(file_path, whichvulv))
     if not isVuln:
         print(green + '\n✅ Your project is not vulnerable! 👌😁👌' + reset_text)
     else:
