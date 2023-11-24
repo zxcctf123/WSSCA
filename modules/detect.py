@@ -68,8 +68,13 @@ def get_ndict_len(dictionary):
             count += get_ndict_len(value)
         else:
             count += 1
-
     return count+1
+
+def unique(str):
+    for i in range(1, len(str)-1):
+        if (str[i]==str[i+1]):
+            str[i]=''
+    return str
 
 # Vulnerabilities detecting function
 # It returns the code of the vulnerability
@@ -115,6 +120,7 @@ def isVulnerable(file_path):
             if file_path[-4:] == 'html' and re.search(xss,string):
                 vulvs+='2'
                 break
+    vulvs=unique(vulvs)
     return vulvs
 
 vulnType = {
@@ -126,12 +132,11 @@ vulnType = {
 }
 
 def sqli (vulnerable, file_path):
-    attack = ''
     vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to SQL Injection attack" + reset_text)
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for sql in SQLI:
-            if re.search(sql,string) and file_path[-2:] == "py":
+            if re.search(sql,string):
                 temp=[file_path,line,string]
                 vulnerable.append(temp)
     return vulnerable
@@ -151,7 +156,7 @@ def ssrf (vulnerable, file_path):
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for ssrf in SSRF:
-            if re.search(ssrf,string) and file_path[-2:] == "py":
+            if re.search(ssrf,string):
                 temp=[file_path,line,string]
                 vulnerable.append(temp)
     return vulnerable
@@ -161,7 +166,7 @@ def deserialize (vulnerable, file_path):
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for dese in Deserialize:
-            if re.search(dese,string) and file_path[-2:] == "py":
+            if re.search(dese,string):
                 temp=[file_path,line,string]
                 vulnerable.append(temp)
     return vulnerable
@@ -171,7 +176,7 @@ def deserialize (vulnerable, file_path):
 #     for line in range (1, get_ndict_len(json_data()[file_path])):
 #         string = json_data()[file_path][str(line)]
 #         for jwt in WeakSecret:
-#             if re.search(jwt,string) and file_path[-2:] == "py":
+#             if re.search(jwt,string):
 #                 temp=[file_path,line,string]
 #                 vulnerable.append(temp)
 #     return vulnerable
@@ -207,9 +212,9 @@ def vuln(file_path, vulvs):
     
     for type in vulvs:
         match type:
-            case '1' : vulnerable.append(sqli(vulnerable, file_path))
-            case '2' : vulnerable.append(xss(vulnerable, file_path))
-            case '3' : vulnerable.append(ssrf(vulnerable, file_path))
-            case '4' : vulnerable.append(deserialize(vulnerable, file_path))
-            # case 5 : vulnerable.append(weakSecr(vulnerable, file_path))
+            case '1' : vulnerable = sqli(vulnerable, file_path)
+            case '2' : vulnerable = xss(vulnerable, file_path)
+            case '3' : vulnerable = ssrf(vulnerable, file_path)
+            case '4' : vulnerable = deserialize(vulnerable, file_path)
+            # case 5 : vulnerable = weakSecr(vulnerable, file_path)
     return vulnerable
