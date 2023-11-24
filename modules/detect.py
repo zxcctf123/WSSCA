@@ -127,7 +127,7 @@ vulnType = {
 
 def sqli (vulnerable, file_path):
     attack = ''
-    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to SQl Injection attack" + reset_text)
+    vulnerable.append("🆘🆘" + red + f" The file {file_path} have been vulnerable to SQL Injection attack" + reset_text)
     for line in range (1, get_ndict_len(json_data()[file_path])):
         string = json_data()[file_path][str(line)]
         for sql in SQLI:
