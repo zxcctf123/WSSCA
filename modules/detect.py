@@ -70,11 +70,14 @@ def get_ndict_len(dictionary):
             count += 1
     return count+1
 
-def unique(str):
-    for i in range(1, len(str)-1):
-        if (str[i]==str[i+1]):
-            str[i]=''
-    return str
+# def unique(str):
+#     for i in range(0, len(str)):
+#         if (str[i]==str[i+1]):
+#             str[i]=''
+#     return str
+
+def unique_characters_string(word):
+    return ''.join(set(word))
 
 # Vulnerabilities detecting function
 # It returns the code of the vulnerability
@@ -120,7 +123,7 @@ def isVulnerable(file_path):
             if file_path[-4:] == 'html' and re.search(xss,string):
                 vulvs+='2'
                 break
-    vulvs=unique(vulvs)
+    vulvs=unique_characters_string(vulvs)
     return vulvs
 
 vulnType = {

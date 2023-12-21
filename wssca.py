@@ -46,8 +46,8 @@ if args.file:
     isVuln = False
     vulnerable_files = []
     
+    vulvs = ''
     for i in trange(len(file_paths), desc="Detecting"):
-        vulvs = ''
         file_path = file_paths[i]
         # whichvulv = isVulnerable(file_path)
         vulvs = isVulnerable(file_path)
